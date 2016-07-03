@@ -1,7 +1,6 @@
 package introsde.assignment.soap.model;
 
 import introsde.assignment.soap.dao.LifeCoachDao;
-import introsde.assignment.soap.model.LifeStatus;
 import introsde.assignment.soap.model.Person;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -18,11 +17,11 @@ import java.util.List;
 @NamedQuery(name="Person.findAll", query="SELECT p FROM Person p")
 
 
-@XmlType(propOrder = { "idPerson", "name", "lastname", "birthdate", "email", "username", "measure"})
+@XmlType(propOrder = { "idPerson", "gender", "name", "lastname", "age", "email"})
 @XmlAccessorType(XmlAccessType.FIELD)
 @Cacheable(false)
 
-//@XmlRootElement
+@XmlRootElement
 public class Person implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -47,38 +46,24 @@ public class Person implements Serializable {
 	@Column(name="name")
 	private String name;
 
-	@Column(name="username")
-	private String username;
+	@Column(name="gender")
+	private String gender;
 	
-	//@Temporal(TemporalType.DATE)
-	@Column(name="birthdate")
-	private String birthdate;
+	@Column(name="age")
+	private int age;
 	
 	@Column(name="email")
 	private String email;
-
-	// mappedBy must be equal to the name of the attribute in LifeStatus that maps this relation
-	@XmlElementWrapper(name="currentHealth")
-	@OneToMany(mappedBy="person",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
-	private List<LifeStatus> measure;
-		
-	@XmlTransient
-    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
-    private List<HealthMeasureHistory> measures;
-	
-	public List<HealthMeasureHistory> getMeasures() {
-        return measures;
-    }
 		
 	public Person() {
 	}
 	
-	public String getBirthdate() {
-		return this.birthdate;
+	public int getAge() {
+		return this.age;
 	}
 
-	public void setBirthdate(String birthdate) {
-		this.birthdate = birthdate;
+	public void setAge(int age) {
+		this.age = age;
 	}
 
 	public String getEmail() {
@@ -113,25 +98,14 @@ public class Person implements Serializable {
 		this.name = name;
 	}
 
-	public String getUsername() {
-		return this.username;
+	public String getGender() {
+		return this.gender;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
-	// the XmlElementWrapper defines the name of node in which the list of LifeStatus elements
-	// will be inserted
-	//@XmlElementWrapper(name = "Measure")
-	public List<LifeStatus> getMeasure() {
-	    return measure;
-	}
-
-	public void setMeasure(List<LifeStatus> measure) {
-	    this.measure = measure;
-	}
-	
 	// Database operations
 	// Notice that, for this example, we create and destroy and entityManager on each operation. 
 	// How would you change the DAO to not having to create the entity manager every time? 
@@ -150,7 +124,6 @@ public class Person implements Serializable {
 	}
 	
 	public static Person savePerson(Person p) {
-		Person.addHealthProfile(p);
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
@@ -158,17 +131,6 @@ public class Person implements Serializable {
 		tx.commit();
 	    LifeCoachDao.instance.closeConnections(em);
 	    return p;
-	}
-	
-	public static Person addHealthProfile(Person p){
-		List<LifeStatus> lifeStatusList = p.getMeasure();
-        if(lifeStatusList != null){
-           for (int i = 0; i<lifeStatusList.size(); i++) {
-               LifeStatus lifeStatus = lifeStatusList.get(i);
-               lifeStatus.setPerson(p);
-           }
-       }
-        return p;
 	}
 	
 	public static Person updatePerson(Person p) {
