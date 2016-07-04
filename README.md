@@ -1,5 +1,8 @@
-<<<<<<< HEAD
-Assignment3- server
-=======
 # Database-Service
->>>>>>> 17d97dd359eabed538cf9ad8b4e3f8f59eb76add
+
+Works with SOAP operations.
+It provides connection with database.
+
+For details check wiki:
+
+Web site link: https://secure-waters-14580.herokuapp.com/ 
